@@ -7,8 +7,9 @@ public class DataIO {
     private int gameMinute;
     private int freeHour;
     private int freeMinute;
-    //for git test
+
     File timeIO = new File("C:\\Users\\123\\IdeaProjects\\GoSleep\\src\\timeIO.txt");
+    //File timeIO = new File("timeIO.txt");
 
     public void setGameMinute(int gameMinute) {
         this.gameMinute = gameMinute;
@@ -20,19 +21,15 @@ public class DataIO {
     private void readNonce() {
         try {
             BufferedReader re = new BufferedReader(new FileReader(timeIO));
-            nonce=String.valueOf(re.read());
-            //System.out.println(nonce + " =nonce read");
+            nonce=String.valueOf(re.readLine());
             re.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
     private void writeNonce() {
         try {
             BufferedWriter writ = new BufferedWriter(new FileWriter(timeIO));
-            //nonce++;
-            //System.out.println(nonce + " =nonce write");
             writ.write(nonce);
             writ.flush();
             writ.close();
@@ -51,7 +48,6 @@ public class DataIO {
         startHour=Integer.parseInt(s[1]);
         startMinute=Integer.parseInt(s[2]);
         gameMinute=Integer.parseInt(s[3]);
-
     }
 
     public DataIO(String startDate, int startHour, int startMinute) {
@@ -62,7 +58,7 @@ public class DataIO {
     }
 
     public String getStartDate() {
-        readNonce();
+        //readNonce();
         return startDate;
     }
 
