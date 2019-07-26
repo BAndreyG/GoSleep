@@ -10,14 +10,13 @@ public class Dates {
     private static int currentMinute;
     private static String curentDay;
     private static int gameMinute;
-    private int timing=5000;
-//    private Data curentTime;
-    private DataIO dataIO=null;
+    private static int timing=5000;
+    private static DataIO dataIO=null;
 
     private static int countHour;
     private static int startHour;
     private static int endHour;
-    private static int maxMinGame;
+    private static int maxLongGame=120;
 
     private int count;
 
@@ -25,42 +24,38 @@ public class Dates {
         curentDay = LocalDateTime.now ( ).getDayOfWeek().toString ();
         currentHour= LocalDateTime.now ( ).getHour();
         currentMinute= LocalDateTime.now ( ).getMinute();
-        readConfig();
+        //readConfig();
         System.out.println(curentDay+" "+currentHour+" "+currentMinute);
-        DataIO dataIO=getDataio();
-        if (dataIO==null) {
-            dataIO.setStartDate(curentDay);
-            dataIO.setStartHour(currentHour);
-            dataIO.setStartMinute(currentMinute);
-            dataIO.setGameMinute(gameMinute);
-            dataIO.setGameMinute(0);
-            dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute+ " "+gameMinute);
-        }
-        else if (!curentDay.equals(dataIO.getStartDate())) dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute);
-        else if (curentDay.equals(dataIO.getStartDate())) {
-          //  if (currentHour>)
-        }
-        System.out.println(dataIO.getStartHour());
-        //DataIO dataIO=new DataIO(curentDay,startHour,startMinute);
-    /*    dataIO.setStartDate(curentDay);
-        dataIO.setStartHour(startHour);
-        dataIO.setStartMinute(startMinute);
-        System.out.println(dataIO.getStartHour());
-        System.out.println(LocalDateTime.now());
-    */}
+        DataIO dataIO=new DataIO();
+        if (dataIO==null) {setCurent();}
+        else if (!curentDay.equals(dataIO.getStartDate())) setCurent();
+            if (currentHour>dataIO.getGameEnd())goShutdown();
+            if (gameMinute>dataIO.getMaxMinGameDay())goShutdown();
+            if ((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute())<60) goShutdown();
+            gameNow();
 
-    public String getCurentDay() { return curentDay; }
+        System.out.println(dataIO.getStartHour());
+        }
+
+    public static void setCurent() {
+        dataIO.setStartDate(curentDay);
+        dataIO.setStartHour(currentHour);
+        dataIO.setStartMinute(currentMinute);
+        dataIO.setGameMinute(gameMinute);/// ???
+        dataIO.setGameMinute(0); /// ???
+        dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute+ " "+gameMinute); }
     public void setCurentDay(String curentDay) { this.curentDay = curentDay; }
 
     public static DataIO getDataio() {
         DataIO dataIO=new DataIO();
         return dataIO;
     }
-    public void gameNow(){
+    public static void gameNow(){
         try {
             Thread.sleep(timing);
-
-
+            gameMinute+=timing/1000;
+            if (gameMinute>dataIO.getMaxMinGameDay())goShutdown();
+            if (LocalDateTime.now ( ).getHour()>dataIO.getGameEnd())goShutdown();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
