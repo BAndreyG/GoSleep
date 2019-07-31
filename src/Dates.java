@@ -1,8 +1,7 @@
 //import javax.xml.crypto.Data;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import com.sun.javaws.exceptions.ExitException;
+
+import java.io.*;
 import java.time.LocalDateTime;
 
 public class Dates {
@@ -11,7 +10,7 @@ public class Dates {
     private static String curentDay;
     private static int gameMinute;
     private static int timing=5000;
-    private static DataIO dataIO=null;
+    private static DataIO dataIO;
 
     private static int countHour;
     private static int startHour;
@@ -26,24 +25,23 @@ public class Dates {
         currentMinute= LocalDateTime.now ( ).getMinute();
         //readConfig();
         System.out.println(curentDay+" "+currentHour+" "+currentMinute);
-        DataIO dataIO=new DataIO();
+        dataIO=new DataIO();
+        gameMinute=dataIO.getGameMinute();
         if (dataIO==null) {setCurent();}
         else if (!curentDay.equals(dataIO.getStartDate())) setCurent();
-            if (currentHour>dataIO.getGameEnd())goShutdown();
-            if (gameMinute>dataIO.getMaxMinGameDay())goShutdown();
-            if ((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute())<60) goShutdown();
+            if (currentHour>dataIO.getGameEnd())goShutdown("begin night");
+            if (dataIO.getGameMinute()>=dataIO.getMaxMinGameDay())goShutdown("full game time");
+            if (((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute()))<60) goShutdown("period relax <60");
             gameNow();
 
-        System.out.println(dataIO.getStartHour());
         }
 
     public static void setCurent() {
-        dataIO.setStartDate(curentDay);
-        dataIO.setStartHour(currentHour);
-        dataIO.setStartMinute(currentMinute);
-        dataIO.setGameMinute(gameMinute);/// ???
-        dataIO.setGameMinute(0); /// ???
-        dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute+ " "+gameMinute); }
+        gameMinute=0;
+        //Dates.dataIO.setCurent(curentDay,currentHour,currentMinute,gameMinute);
+        dataIO.setCurent(curentDay,currentHour,currentMinute,gameMinute);
+        //dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute+ " "+gameMinute);
+    }
     public void setCurentDay(String curentDay) { this.curentDay = curentDay; }
 
     public static DataIO getDataio() {
@@ -52,16 +50,40 @@ public class Dates {
     }
     public static void gameNow(){
         try {
-            Thread.sleep(timing);
-            gameMinute+=timing/1000;
-            if (gameMinute>dataIO.getMaxMinGameDay())goShutdown();
-            if (LocalDateTime.now ( ).getHour()>dataIO.getGameEnd())goShutdown();
+            while (true) {
+                Thread.sleep(timing*60);//*60
+                gameMinute += timing / 1000;
+                dataIO.setNonce(curentDay+" "+currentHour+" "+currentMinute+" "+gameMinute);
+                if (gameMinute > dataIO.getMaxMinGameDay()) goShutdown("more 180");
+                if (LocalDateTime.now().getHour() > dataIO.getGameEnd()) goShutdown("after 20");
+                int q=LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute();
+                int w=dataIO.getStartHour()*60+dataIO.getStartMinute();
+                int e=(currentHour*60+currentMinute);
 
+                if ((LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute()-dataIO.getStartHour()*60+dataIO.getStartMinute())>120)
+                {System.out.println(q+" q "+w+" w "+e +" e ");
+                    goShutdown("more 120 min__");}
+                if (((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute()))>120)
+                {goShutdown("more 120 min");}
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-    public static void goShutdown(){}
+    public static void goShutdown(String text){
+        System.out.println(LocalDateTime.now().getMinute()+"   / gameMinute="+gameMinute);
+
+        System.out.println(text);
+       /* String command = "cmd /c"; // start cmd.exe
+        Process child = null;
+        try {
+            child = Runtime.getRuntime().exec(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        OutputStream out = child.getOutputStream();
+       */ // System.exit(0);
+    }
     public static void readConfig(){
         File timeIO = new File("C:\\Users\\123\\IdeaProjects\\GoSleep\\src\\config.txt");
         String config="";

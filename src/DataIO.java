@@ -12,7 +12,7 @@ public class DataIO {
 
 
     File timeIO = new File(System.getProperty("user.dir")+"\\src\\timeIO.txt");
-    File config = new File(System.getProperty("user.dir")+"\\src\\timeIO.txt");
+    File config = new File(System.getProperty("user.dir")+"\\src\\config.txt");
     //File timeIO = new File("timeIO.txt");
 
     public void setGameMinute(int gameMinute) {
@@ -56,7 +56,8 @@ public class DataIO {
         startMinute=Integer.parseInt(s[2]);
         gameMinute=Integer.parseInt(s[3]);
         maxMinGameDay=Integer.parseInt(conf.split(" ")[0]);
-        gameEnd=Integer.parseInt(conf.split(" ")[0]);
+        if (startDate.equals("SUNDAY")||startDate.equals("SATURDAY"))maxMinGameDay+=60;
+        gameEnd=Integer.parseInt(conf.split(" ")[1]);
     }
 
     public int getMaxMinGameDay() {return maxMinGameDay;    }
@@ -70,6 +71,14 @@ public class DataIO {
         this.startMinute = startMinute;
 
     }
+    public void setCurent(String curentDay,int currentHour,int currentMinute,int gameMinute){
+        setStartDate(curentDay);
+        setStartHour(currentHour);
+        setStartMinute(currentMinute);
+        setGameMinute(gameMinute);
+        nonce=curentDay+" "+currentHour+" "+currentMinute+" "+gameMinute;
+        writeNonce();
+    }
 
     public String getStartDate() {
         //readNonce();
@@ -78,7 +87,7 @@ public class DataIO {
 
     public void setStartDate(String startDate) {
         this.startDate = startDate;
-        writeNonce();
+        //writeNonce();
     }
     public int getStartHour() {
         return startHour;
