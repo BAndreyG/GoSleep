@@ -33,7 +33,6 @@ public class Dates {
             if (dataIO.getGameMinute()>=dataIO.getMaxMinGameDay())goShutdown("full game time");
             if (((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute()))<60) goShutdown("period relax <60");
             gameNow();
-
         }
 
     public static void setCurent() {
@@ -60,9 +59,9 @@ public class Dates {
                 int w=dataIO.getStartHour()*60+dataIO.getStartMinute();
                 int e=(currentHour*60+currentMinute);
 
-                if ((LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute()-dataIO.getStartHour()*60+dataIO.getStartMinute())>120)
-                {System.out.println(q+" q "+w+" w "+e +" e ");
-                    goShutdown("more 120 min__");}
+                if ((q-w)>120){System.out.println(q+" q "+w+" w "+e +" e ");
+                    goShutdown("more 120 min__");
+                    System.exit(0);}
                 if (((currentHour*60+currentMinute)-(dataIO.getStartHour()*60+dataIO.getStartMinute()))>120)
                 {goShutdown("more 120 min");}
             }
@@ -74,7 +73,7 @@ public class Dates {
         System.out.println(LocalDateTime.now().getMinute()+"   / gameMinute="+gameMinute);
 
         System.out.println(text);
-       /* String command = "cmd /c"; // start cmd.exe
+        String command = "cmd /c start shutdown /s /t 999"; //  /f- немедленное отключение
         Process child = null;
         try {
             child = Runtime.getRuntime().exec(command);
@@ -82,7 +81,7 @@ public class Dates {
             e.printStackTrace();
         }
         OutputStream out = child.getOutputStream();
-       */ // System.exit(0);
+
     }
     public static void readConfig(){
         File timeIO = new File("C:\\Users\\123\\IdeaProjects\\GoSleep\\src\\config.txt");

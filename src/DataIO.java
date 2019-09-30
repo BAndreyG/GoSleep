@@ -61,9 +61,9 @@ public class DataIO {
     }
 
     public int getMaxMinGameDay() {return maxMinGameDay;    }
-    public void setMaxMinGameDay(int maxMinGameDay) {this.maxMinGameDay = maxMinGameDay;    }
+
     public int getGameEnd() {return gameEnd;}
-    public void setGameEnd(int gameEnd) {this.gameEnd = gameEnd;    }
+
 
     public DataIO(String startDate, int startHour, int startMinute) {
         this.startDate = startDate;
